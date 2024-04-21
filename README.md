@@ -13,7 +13,7 @@ If you want to use BertTCR, please clone github repository on your own machine i
  cd BertTCR
 ```
 #  Requirement
-## Running BertTCR requires
+Running BertTCR requires
 
 Python 3.7.6
 
