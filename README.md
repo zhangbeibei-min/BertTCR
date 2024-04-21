@@ -2,7 +2,7 @@
 A deep learning framework for prediction of cancer-related immune states using T cell receptor repertoires. In short, the framework contains two classifiers, including a binary classification model and a multi-class classification model, and their corresponding strategies for immune status assessment.
 
 # Workflow
-## ![image name]()
+## ![image name](https://github.com/zhangbeibei-min/BertTCR/tree/main/Figures)
 
 
 # Installation
