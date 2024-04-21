@@ -32,26 +32,22 @@ class BertTCR(nn.Module):
         ])
         self.avg_pool = nn.AdaptiveAvgPool1d(1)
         self.fc = nn.Linear(sum(filter_num), 1)
-        #self.fc_1 = nn.Linear(ins_num, 2)  # ins_=100，MIL部分1.单层线性模型
-        self.models = nn.ModuleList([ nn.Linear(ins_num, 2) for _ in range(5)])#2.集成学习的思想，创建了一个包含5个线性层的模块列表，融合多个模型的预测结果
-
+        self.models = nn.ModuleList([ nn.Linear(ins_num, 2) for _ in range(5)])#MIL + ensemble learning
         self.dropout = nn.Dropout(p=drop_out)
         self.sigmoid = nn.Sigmoid()
     def forward(self, x):
-        x = x.reshape(-1, 768, 24)#(34300,768,24)
-        out = [conv(x) for conv in self.convs]#0:(34300,3,1),1:(34300,2,1),2:(34300,1,1)
-        out = torch.cat(out, dim=1)#在第二个维度进行拼接(34300,6,1)
-        out = out.reshape(-1, 1, sum(self.filter_num))#(34300,1,6)
-        out = self.dropout(self.fc(out))#Dropout 是一种正则化技术，用于随机丢弃一部分神经元的输出，以减少过拟合#(34300,1,1) 
-        out = out.reshape(-1, self.ins_num)#(343,100)
-        # out = self.dropout(self.fc_1(out))##1.单层线性模型
-        # out = self.sigmoid(out)
-        #  # 2.融合多个模型的预测结果
+        x = x.reshape(-1, 768, 24)#
+        out = [conv(x) for conv in self.convs]#
+        out = torch.cat(out, dim=1)#
+        out = out.reshape(-1, 1, sum(self.filter_num))#
+        out = self.dropout(self.fc(out))#Dropout
+        out = out.reshape(-1, self.ins_num)#
+        #  # Merge the predictions of multiple models
         pred_sum = 0
         for model in self.models:
             pred = self.dropout(model(out))
             pred_sum += pred
-        out = self.sigmoid(pred_sum / len(self.models))#(343,2)#通过 Sigmoid 函数对平均预测结果进行映射，输出最终的分类概率。提高模型的稳定性和准确性，并且可以减少过拟合的可能性。       
+        out = self.sigmoid(pred_sum / len(self.models))
         return out
 def create_parser():
     parser = argparse.ArgumentParser(
@@ -63,14 +59,14 @@ def create_parser():
         dest="sample_dir",
         type=str,
         help="The directory of training samples.",
-        default="/data/zhangm/BertTCR/Data/Lung/TrainingData"
+        default="./TrainingData"
     )
     parser.add_argument(
     "--val_sample_dir",
     dest="val_sample_dir",
     type=str,
     help="The directory of validation samples.",
-    default="/data/zhangm/BertTCR/Data/Lung/TestData"
+    default="./validationData"
     )
     parser.add_argument(
         "--tcr_num",
@@ -147,11 +143,11 @@ def create_parser():
         dest="output",
         type=str,
         help="Output model file in .pth format.",
-        default="/data/zhangm/BertTCR/Model/Pretrained_Lung12.1.pth",
+        default=".TrainedModels/Pretrained_THCA.pth",
     )
     args = parser.parse_args()
     return args
-# 定义数据集类
+# Define the data set class
 class TCRDataset(Data.Dataset):
     def __init__(self, sample_dir, flag_positive, flag_negative):
         self.samples = []
@@ -161,11 +157,11 @@ class TCRDataset(Data.Dataset):
     def __len__(self):
         return len(self.samples)
     def __getitem__(self, index):
-        sample_path = os.path.join(self.sample_dir, self.samples[index])  # 修改这里
+        sample_path = os.path.join(self.sample_dir, self.samples[index])  #
         sample_data = torch.load(sample_path, "cpu")
-        if self.samples[index].find(flag_positive) != -1:  # 修改这里
+        if self.samples[index].find(flag_positive) != -1:  #
             label = 1
-        elif self.samples[index].find(flag_negative) != -1:  # 修改这里
+        elif self.samples[index].find(flag_negative) != -1:  #
             label = 0
         else:
             raise ValueError(
@@ -173,16 +169,16 @@ class TCRDataset(Data.Dataset):
                     flag_positive, flag_negative))
         return sample_data, label
 if __name__ == "__main__":
-    # Parse arguments解析参数.
+    # Parse arguments.
     args = create_parser()
-    # 设置参数
+    # set parameters
     sample_dir = args.sample_dir if args.sample_dir[-1] == "/" else args.sample_dir + "/"
     flag_positive = args.flag_positive
     flag_negative = args.flag_negative
-    # 创建数据集实例（训练集）
+    # Create a dataset instance (training set)
     dataset = TCRDataset(sample_dir, args.flag_positive, args.flag_negative)
     loader = Data.DataLoader(dataset, batch_size=100, shuffle=True)
-    # #创建数据集实例(测试集)
+    # #Create a dataset instance (validation set)
     val_sample_dir = args.val_sample_dir if args.val_sample_dir[-1] == "/" else args.val_sample_dir + "/"
     val_dataset = TCRDataset(val_sample_dir, args.flag_positive, args.flag_negative)
     val_loader = Data.DataLoader(val_dataset, batch_size=len(val_dataset), shuffle=False)
@@ -192,17 +188,17 @@ if __name__ == "__main__":
                      ins_num=args.tcr_num,
                      drop_out=args.dropout).to(torch.device(args.device))
     
-    criterion = nn.CrossEntropyLoss().to(args.device)#损失函数
-    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=0.001)#优化器
-    # 训练模型Training model.
+    criterion = nn.CrossEntropyLoss().to(args.device)#loss function
+    optimizer = optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=0.001)#optimizer
+    # Training model.
     lr_values = []
-    losses = []  # 存储每个epoch的loss值
-    accuracies = []  # 存储每个epoch的准确率值
-    aucs = [] # 存储每个epoch的AUC值
-    val_losses = []  # 存储每个epoch的验证集loss值
-    val_accuracies = []  # 存储每个epoch的验证集准确率值
-    val_aucs = [] # 存储每个epoch的验证集AUC值
-    best_auc = 0.0 # 最佳AUC值
+    losses = []  #
+    accuracies = []  #
+    aucs = [] #
+    val_losses = []  #
+    val_accuracies = []  #
+    val_aucs = [] #
+    best_auc = 0.0 #
     for epoch in range(args.epoch):
         epoch_loss = 0.0
         epoch_accuracy = 0.0
@@ -225,7 +221,7 @@ if __name__ == "__main__":
         epoch_loss /= len(loader)
         epoch_accuracy /= len(loader)
         accuracies.append(epoch_accuracy)
-        losses.append(epoch_loss)  # 存储当前epoch的平均loss值       
+        losses.append(epoch_loss)  #
         if (epoch + 1) % args.log_interval == 0:
             print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             print('train_Epoch:', '%04d' % (epoch + 1), 
@@ -252,83 +248,8 @@ if __name__ == "__main__":
                 print('valid_Epoch:', '%04d' % (epoch + 1), 
                     'valid_accuracy = ' , '{:.3f}'.format(epoch_val_accuracy),
                     'valid_loss =', '{:.6f}'.format(epoch_val_loss))
-            # 保存最佳模型
+            # save best model
             if val_auc > best_auc and epoch > 10:
                 best_auc = val_auc
                 torch.save(model.state_dict(), args.output)
                 print("The best model has been saved with AUC: {:.4f}".format(best_auc))
-    # 绘制准确率和损失曲线
-    plt.plot(range(1, args.epoch+1), accuracies, label='Train Accuracy')
-    plt.plot(range(1, args.epoch+1), losses, label='Train Loss')
-    plt.plot(range(1, args.epoch+1), val_accuracies, label='Validation Accuracy')
-    plt.plot(range(1, args.epoch+1), val_losses, label='Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Value')
-    plt.title('Accuracy and Loss vs. Epoch')
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig('/data/zhangm/BertTCR/Picture/accuracy_loss_epoch_plot_Lung12.1.jpg')
-    plt.show()
-
-
-
-
-
-
-
-
-
-#**********之前的
-    # # 训练模型Training model.
-    # lr_values = []
-    # losses = []  # 存储每个epoch的loss值
-    # accuracies = []  # 存储每个epoch的准确率值
-    # aucs = [] # 存储每个epoch的AUC值
-    # best_auc = 0.0 # 最佳AUC值
-    # for epoch in range(args.epoch):
-    #     for batch_x, batch_y in loader:
-    #         batch_x, batch_y = batch_x.to(torch.device(args.device)), batch_y.to(torch.device(args.device))
-    #         pred = model(batch_x)
-    #         loss = criterion(pred, batch_y)
-    #         if (epoch + 1) % args.log_interval == 0:
-    #             print('Epoch:', '%04d' % (epoch + 1), 'loss =', '{:.6f}'.format(loss))
-    #         lr_values.append(optimizer.param_groups[0]['lr'])
-    #         optimizer.zero_grad()
-    #         loss.backward()
-    #         optimizer.step()
-    #         correct = (torch.argmax(pred, dim=1) == batch_y).sum().item()
-    #         accuracy = correct / len(batch_y)
-    #         accuracies.append(accuracy)
-    #         losses.append(loss.item())  # 存储当前epoch的loss值
-    #          # 计算AUC值
-    #         with torch.no_grad():
-    #             pred_prob = pred[:, 1].detach().cpu().numpy() # 取预测概率
-    #             auc = roc_auc_score(batch_y.cpu().numpy(), pred_prob)
-    #             aucs.append(auc)
-    #             # 保存最佳模型
-    #             if auc > best_auc:
-    #                 best_auc = auc
-    #                 #torch.save(model.state_dict(), args.output)
-    #                 print("The best model has been saved with AUC: {:.4f}".format(best_auc))
-    
-    # # 保存losses、accuracies和aucs为CSV文件
-    # #data = {'Loss': losses, 'Accuracy': accuracies, 'AUC': aucs}
-    # #df = pd.DataFrame(data)
-    # #df.to_csv('/data/zhangm/BertTCR/Result/Lung/metrics6.csv', index=False)          
-
-    # # 绘制准确率和损失曲线
-    # plt.plot(range(1, args.epoch+1), accuracies, label='Accuracy')
-    # plt.plot(range(1, args.epoch+1), losses, label='Loss')
-    # plt.xlabel('Epoch')
-    # plt.ylabel('Value')
-    # plt.title('Accuracy and Loss vs. Epoch')
-    # plt.grid(True)
-    # plt.legend()
-    # plt.savefig('/data/zhangm/BertTCR/Picture/accuracy_loss_epoch_plot_Lung.jpg11.10')  # 保存图像到指定路径
-    # #plt.savefig('/data/zhangm/BertTCR/Picture/accuracy_loss_epoch_plot_THCA.jpg')  # 保存图像到指定路径
-    # plt.show()
-
-
-
-
