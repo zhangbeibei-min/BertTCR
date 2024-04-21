@@ -13,14 +13,20 @@ If you want to use BertTCR, please clone github repository on your own machine i
  cd BertTCR
 ```
 #  Requirement
-Running BertTCR requires
+## Running BertTCR requires
 
 Python 3.7.6
-torch    
+
+torch   
+
 tape
+
 sklearn 0.22.1
+
 numpy 1.21.6
+
 scipy 1.5.2
+
 pandas 1.0.1
 
 If you don't have them installed in your environment, first install all package by running the following command:
