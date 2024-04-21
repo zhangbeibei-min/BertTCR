@@ -4,7 +4,6 @@
 import argparse
 import os
 
-
 def create_parser():
     parser = argparse.ArgumentParser(
         description="Script to process raw files.",
@@ -15,7 +14,7 @@ def create_parser():
         dest="input_dir",
         type=str,
         help="The directory containing input raw files in .txt format.",
-        default='/data/zhangm/BertTCR/RawData/Health',
+        default='./RawData/Health',
     )
     parser.add_argument(
         "--reference",
@@ -43,7 +42,7 @@ def create_parser():
         dest="output_dir",
         type=str,
         help="Output directory for converted files.",
-        default='/data/zhangm/BertTCR/RawData/Healthtsv',
+        default='./Healthtsv',
     )
     args = parser.parse_args()
     return args
