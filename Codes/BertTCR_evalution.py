@@ -19,7 +19,7 @@ def create_parser():
         dest="input",
         type=str,
         help="The input prediction file in .tsv format.",
-        default='/data/zhangm/BertTCR/Result/Lung_prediction12.1.tsv',
+        default='F:\\Github\\BertTCR\\Results\\BertTCR_THCA_prediction_result.tsv',
     )
     parser.add_argument(
         "--flag_positive",
@@ -101,72 +101,3 @@ if __name__ == "__main__":
         F1-score:\t{5}
         '''.format(args.input, acc, sen, spe, auc,f1)
     )
-
-    #************************plot ROC curve,confusion matrix and PRC curve*****************************************
-
-    #************1.plot ROC curve*************************************
-    import numpy as np
-    import itertools
-    import matplotlib.pyplot as plt
-    from sklearn.metrics import roc_curve, auc, confusion_matrix
-    fpr, tpr, thresholds = roc_curve(labels, probs)
-    roc_auc = auc(fpr, tpr)
-    plt.figure(figsize=(8, 8))
-    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (AUC = %0.3f)' % roc_auc)
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic')
-    plt.title('THCA')
-    #plt.title('Deeplion_validation_THCA')
-    plt.legend(loc="lower right")
-    #plt.savefig('/data/zhangm/BertTCR/Picture/roc_curve_plot_THCA.jpg')  # 保存ROC曲线图像到指定路径
-    plt.savefig('/data/zhangm/BertTCR/Picture/AACNN/AATHCA_roc_curve_plot.jpg')  # 保存ROC曲线图像到指定路径
-   
-    # *********2.plot confusion matrix******************************
-    cm = confusion_matrix(labels, preds)
-    plt.figure(figsize=(8, 8))
-    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
-    plt.title('THCA')
-    #plt.title('Deeplion_validation_THCA')
-    #plt.title('THCA')
-    #plt.title('Confusion matrix')
-    plt.colorbar()
-    tick_marks = np.arange(2)
-    plt.xticks(tick_marks, ['Negative', 'Positive'], rotation=45)
-    plt.yticks(tick_marks, ['Negative', 'Positive'])
-    plt.xlabel('Predicted label')
-    plt.ylabel('True label')
-    fmt = 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
-    # show plots
-    #plt.savefig('/data/zhangm/BertTCR/Picture/confusion_matrix_plot_THCA.jpg')  # 保存混淆矩阵图像到指定路径
-    plt.savefig('/data/zhangm/BertTCR/Picture/AACNN/AATHCA_confusion_matrix_plot.jpg')  # 保存混淆矩阵图像到指定路径
-    plt.show() 
-
-    #####3.plot PRC curve***************************
-    from sklearn.metrics import auc 
-    precision, recall, thresholds = precision_recall_curve(labels, probs)
-    prc_auc = auc(recall, precision)
-
-    plt.figure(figsize=(8, 8))
-    plt.plot(recall, precision, color='darkorange', lw=2, label='PRC curve (area = %0.3f)' % prc_auc)
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.title('Precision-Recall Curve')
-    plt.title('THCA')
-    plt.legend(loc="lower right")
-    #plt.savefig('/data/zhangm/BertTCR/Picture/AACNN/AATHCA_PRC_curve.jpg')  # 保存PRC曲线图像到指定路径
-    plt.show()
-
-
-
-
-
-
