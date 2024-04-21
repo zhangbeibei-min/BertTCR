@@ -12,8 +12,6 @@ If you want to use BertTCR, please clone github repository on your own machine i
  git clone https://github.com/zhangbeibei-min/BertTCR.git
  cd BertTCR
 ```
-
-
 #  Requirement
 Running BertTCR requires
 
@@ -25,7 +23,7 @@ numpy 1.21.6
 scipy 1.5.2
 pandas 1.0.1
 
-If you don't have them installed in your environment, first install numpy, pandas, and scikit-learn by running the following command:
+If you don't have them installed in your environment, first install all package by running the following command:
 ```
  pip install -r requirements.txt
 ```
