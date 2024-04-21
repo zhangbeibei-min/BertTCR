@@ -19,7 +19,7 @@ def create_parser():
         dest="input",
         type=str,
         help="The input prediction file in .tsv format.",
-        default='F:\\Github\\BertTCR\\Results\\BertTCR_THCA_prediction_result.tsv',
+        default='BertTCR_THCA_prediction_result.tsv',
     )
     parser.add_argument(
         "--flag_positive",
@@ -40,7 +40,6 @@ def create_parser():
 
 
 def read_tsv(filename, inf_ind, skip_1st=False, file_encoding="utf8"):
-    # Return n * m matrix "final_inf" (n is the num of lines, m is the length of list "inf_ind").
     extract_inf = []
     with open(filename, "r", encoding=file_encoding) as tsv_f:
         if skip_1st:
@@ -59,7 +58,6 @@ def read_tsv(filename, inf_ind, skip_1st=False, file_encoding="utf8"):
 if __name__ == "__main__":
     # Parse arguments.
     args = create_parser()
-
     # Read the prediction file.
     prediction_file = read_tsv(args.input, [0, 1, 2], True)
 
@@ -81,10 +79,8 @@ if __name__ == "__main__":
 
         # Get probability.
         probs.append(float(sample[1]))
-
         # Get prediction.
         preds.append(1 if float(sample[1]) > 0.5 else 0)
-
     # compute metrics.
     acc = round(accuracy_score(labels, preds), 3)
     sen = round(recall_score(labels, preds), 3)
