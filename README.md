@@ -18,9 +18,25 @@ To run BertTCR, you need to configure the corresponding python package. If they 
 ```
 
 # Usage
-### train the model
-first
+## 1.Using the pre-trained model
 
+
+```
+-----**** [.\BertTCR_THCA_prediction_result.tsv] ****-----
+        Accuracy:	0.93
+        Sensitivity:	0.875
+        Specificity:	0.978
+        F1-score:	0.921
+        AUC:	0.99
+        
+```
+## ![ ](https://github.com/zhangbeibei-min/BertTCR/tree/main/Figures)
+
+## 2.Training a new model
+Take binary classification for example.
+### train the model
+
+BertTCR_tranining.py set lr=
 ### test the model
 dddf
 
