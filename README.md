@@ -8,6 +8,7 @@ A deep learning framework for prediction of cancer-related immune states using T
 ### **If you**
 ```
  git clone https://github.com/zhangbeibei-min/BertTCR.git
+ cd BertTCR
 ```
 
 
