@@ -1,5 +1,5 @@
 # BertTCR
-A deep learning framework for prediction of cancer-related immune states using T cell receptor repertoires. In short, the framework contains two classifiers, including a binary classification model and a multi-class classification model, and their corresponding strategies for immune status assessment.
+A deep learning framework for prediction of cancer-related immune status based on pre-trained protein-BERT model using T cell receptor repertoires. The framework comprises two classifiers: one for accurately distinguishing between cancer patients and healthy individuals using a binary classification model, and another for discriminating between specific cancer types or healthy status using a multi-class classification model. Additionally, the framework provides corresponding immune state assessment strategies.
 
 # Workflow
 ## ![image name](https://github.com/zhangbeibei-min/BertTCR/tree/main/Workflow)
