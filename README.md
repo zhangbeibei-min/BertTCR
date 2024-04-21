@@ -17,11 +17,11 @@ To run BertTCR, you need to configure the corresponding python package. If they 
  pip install -r requirements.txt
 ```
 
-#  Note
-1. Three_platform_model.py  : Standardize CBC data
-2. Immune_status_cluster.py : Used for immune state clustering of CBC data
-3. Immune_status_weight.py : Find the correlation coefficient
-4. Immune_status_score.py : Score for immune status
-5. Cubic_polynomial_fitting.py : To find the relationship between age and immune status score
 
-The code runs in the order shown above.
+
+
+
+
+
+# Contact
+Feel free to submit an issue or contact us at 695193839@qq.com for problems about the tool.
