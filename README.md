@@ -44,7 +44,7 @@ Finally, we used./Codes/BertTCR_evalution.py to evaluate performance on test dat
 ![ROC](https://github.com/zhangbeibei-min/BertTCR/tree/main/Figures)
 
 ## 2.Training a new model
-Users can train their own BertTCR models on their TCR sequencing data samples to get better predictive performance with the following commands:
+Users can train their own BertTCR model on their own TCR sequencing data samples, train the training set, adjust the parameters of the validation set, and then save the best model of the validation set, using the following command to get better prediction performance:
 ```
 python BertTCR_tranining.py --sample_dir ./TrainingData --val_sample_dir ./validationData --dropout 0.4 --epoch 500 --learning_rate 0.001
 
