@@ -12,7 +12,6 @@ If you want to use BertTCR, please clone github repository on your own machine i
  git clone https://github.com/zhangbeibei-min/BertTCR.git
  cd BertTCR
 ```
-#  Requirement
 To run BertTCR, you need to configure the corresponding python package. If they are not installed in your environment, run the following command to install them first:
 ```
  pip install -r requirements.txt
