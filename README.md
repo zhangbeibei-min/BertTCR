@@ -6,7 +6,8 @@ A deep learning framework for prediction of cancer-related immune status based o
 
 
 # Installation
-### **If you**
+
+If you want to use BertTCR, please clone github repository on your own machine in a desired folder
 ```
  git clone https://github.com/zhangbeibei-min/BertTCR.git
  cd BertTCR
