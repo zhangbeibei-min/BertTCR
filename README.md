@@ -1,5 +1,5 @@
 # BertTCR
-A deep learning framework for prediction of cancer-related immune status based on T cell receptor repertoires. This framework utilizes pre-trained protein-BERT models to embed sequences, followed by predictors combining multiple-instance learning (MIL), convolutional neural networks (CNNs), and ensemble learning(EL) to forecast immune status. It includes two classifiers: one for accurately distinguishing between cancer patients and healthy individuals using a binary classification model, and another for discriminating between specific cancer types or healthy status using a multi-class classification model. Additionally, the framework provides corresponding immune state evaluation strategies.For more details, please read our paper.
+A deep learning framework for prediction of cancer-related immune status based on T cell receptor repertoires. 
 
 
 ![Workflow ](https://github.com/zhangbeibei-min/BertTCR/tree/main/Workflow)
@@ -19,12 +19,7 @@ To run BertTCR, you need to configure the corresponding python package. If they 
 
 # Usage
 ## 1.Using the pre-trained model
-In the case of binary classification, the immune status of a healthy individual is classified against the immune status of a THCA patient by first processing the raw data using .\Codes\Prepare_file.py with the following command:
-```
-python .\Codes\Prepare_file.py  --input_dir .\SampleData\THCA\TestData
-
-```
-and then using .\Codes\BERT_embedding.py. The TCR sequence is embedded with the processed data, and then the processed test data is predicted using a Python script, using the pretrained model with the following command:
+ using the pretrained model with the following command:
 
 ```
 python .\Codes\BertTCR_prediction.py --model_file ./TrainedModels/Pretrained_THCA.pth
