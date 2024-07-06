@@ -4,4 +4,11 @@ sklearn 0.24.2
 numpy 1.7.1
 scipy 1.5.2
 pandas 1.3.4
+tape_proteins
 tqdm 4.62.3
+TensorFlow 1.14.0
+tensorboardX
+lmdb
+boto3
+requests
+biopython
