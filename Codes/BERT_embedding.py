@@ -167,24 +167,4 @@ if __name__ == "__main__":
                 input_mask = batch['input_mask'].to(device)
                 outputs = model.forward(input_ids, input_mask)
                 
-                outputs_list = list(outputs)
-                outputs_list[0] = torch.transpose(outputs[0], 1, 2)  # Swap the second and third dimensions
-                target_n = 24  # target dimension
 
-                if outputs_list[0].shape[2] > target_n:
-                    # 截取前target_n维度 
-                    outputs_list[0] = outputs_list[0][:, :, :target_n]
-                elif outputs_list[0].shape[2] < target_n:
-                    pad_size = (0, target_n - outputs_list[0].shape[2])        # Fill with 0
-
-                    outputs_list[0] = F.pad(outputs_list[0], pad_size, mode='constant', value=0)
-
-                outputs = tuple(outputs_list)
-
-                # Save the data with the name +trans of the read file name
-                save_file_name = file_name.replace('.tsv', '_trans.pth')
-                save_file_path = os.path.join(save_path, save_file_name)
-                torch.save(outputs[0], save_file_path)
-                print(outputs[0].shape)
-                print(file_name)
-                print(f'Process the{file_count} file ,and the {batch_count} batch')
