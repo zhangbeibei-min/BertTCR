@@ -171,7 +171,7 @@ class TCRDataset(Data.Dataset):
     def __getitem__(self, index):
         sample_file = self.samples[index]
         sample_path = os.path.join(self.sample_dir, sample_file)
-        sample_data = torch.load(sample_path, "cpu")#CPU
+        sample_data = torch.load(sample_path)
         #  Get sample label.
         label = int(sample_file.split(self.flag)[0])
         return sample_data, label
