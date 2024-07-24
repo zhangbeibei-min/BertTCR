@@ -19,7 +19,7 @@ def create_parser():
         dest="input",
         type=str,
         help="The input prediction file in .tsv format.",
-        default='BertTCR_THCA_prediction_result.tsv',
+        default='THCA_prediction_result.tsv',
     )
     parser.add_argument(
         "--flag_positive",
