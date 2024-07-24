@@ -7,37 +7,7 @@ import math
 import matplotlib.pyplot as plt
 import torch.utils.data as Data
 
-# class BertTCR(nn.Module):
-#     def __init__(self, filter_num, kernel_size, ins_num, drop_out):
-#         super(BertTCR, self).__init__()
-#         self.filter_num = filter_num
-#         self.kernel_size = kernel_size
-#         self.ins_num = ins_num
-#         self.drop_out = drop_out
-#         self.convs = nn.ModuleList([
-#             nn.Sequential(nn.Conv1d(in_channels=768,
-#                                     out_channels=filter_num[idx],
-#                                     kernel_size=h,
-#                                     stride=1),
-#                           nn.Sigmoid(),
-#                           nn.AdaptiveMaxPool1d(1))
-#             for idx, h in enumerate(kernel_size)
-#         ])
-#         self.avg_pool = nn.AdaptiveAvgPool1d(1)
-#         self.fc = nn.Linear(sum(filter_num), 1)
-#         self.fc_1 = nn.Linear(ins_num, 2)  # ins_=100，MIL部分
-#         self.dropout = nn.Dropout(p=drop_out)
-#         self.sigmoid = nn.Sigmoid()
-#     def forward(self, x):
-#         x = x.reshape(-1, 768, 24)
-#         out = [conv(x) for conv in self.convs]
-#         out = torch.cat(out, dim=1)#在第二个维度进行拼接
-#         out = out.reshape(-1, 1, sum(self.filter_num))
-#         out = self.dropout(self.fc(out))#Dropout 是一种正则化技术，用于随机丢弃一部分神经元的输出，以减少过拟合
-#         out = out.reshape(-1, self.ins_num)
-#         out = self.dropout(self.fc_1(out))
-#         out = self.sigmoid(out)
-#         return out
+
 class BertTCR(nn.Module):
     def __init__(self, filter_num, kernel_size, ins_num, drop_out):
         super(BertTCR, self).__init__()
@@ -89,14 +59,14 @@ def create_parser():
         dest="sample_dir",
         type=str,
         help="The directory of samples for prediction.",
-        default="/data/zhangm/BertTCR/Data/Lung/TestData",
+        default="./Lung/TestData",
     )
     parser.add_argument(
         "--model_file",
         dest="model_file",
         type=str,
         help="The pretrained model file for prediction in .pth format.",
-        default="/data/zhangm/BertTCR/Model/Pretrained_Lung12.1.pth",
+        default="./Model/Pretrained_Lung.pth",
     )
     parser.add_argument(
         "--tcr_num",
@@ -145,7 +115,7 @@ def create_parser():
         dest="output",
         type=str,
         help="Output file in .tsv format.",
-        default='/data/zhangm/BertTCR/Result/Lung_prediction12.1.tsv',
+        default='./Lung_prediction.tsv',
     )
     args = parser.parse_args()
     return args
