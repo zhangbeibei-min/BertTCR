@@ -18,6 +18,9 @@ To run BertTCR, you need to configure the corresponding python package. If they 
 ```
 
 # Usage
+# Data Preparation
+Before training or prediction, you must convert raw TSV files to .pth format using BERT_embedding.py:
+
 ## 1.Using the pre-trained model
  using the pretrained model with the following command:
 
