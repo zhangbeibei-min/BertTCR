@@ -166,5 +166,40 @@ if __name__ == "__main__":
                 input_ids = batch['input_ids'].to(device)
                 input_mask = batch['input_mask'].to(device)
                 outputs = model.forward(input_ids, input_mask)
-                
+    file_count = 0  # 用于记录文件数量
+    for file_name in file_list:
+        if file_name.endswith('.tsv'):
+            file_count += 1
+            args.train = file_name
+            trainset = BertDataset(args.train, max_tcr_len=args.tcrlen, instance_weight=args.instance_weight)
+            train_data = DataLoader(trainset, batch_size=args.batch_size, shuffle=True, num_workers=0, pin_memory=True,
+                                    collate_fn=trainset.collate_fn)
+            batch_count = 0  # 用于记录批次数量
+            for batch in train_data:
+                batch_count += 1
+                input_ids = batch['input_ids'].to(device)
+                input_mask = batch['input_mask'].to(device)
+                outputs = model.forward(input_ids, input_mask)
+
+                outputs_list = list(outputs)
+                outputs_list[0] = torch.transpose(outputs[0], 1, 2)  # 交换第二维第三维（100,768,24）
+                target_n = 24  # 目标维度n为24
+
+                if outputs_list[0].shape[2] > target_n:
+                    # 截取前target_n维度
+                    outputs_list[0] = outputs_list[0][:, :, :target_n]
+                elif outputs_list[0].shape[2] < target_n:
+                    pad_size = (0, target_n - outputs_list[0].shape[2])  # 后面填充0
+                    outputs_list[0] = F.pad(outputs_list[0], pad_size, mode='constant', value=0)
+
+                outputs = tuple(outputs_list)
+
+                # 根据读入的文件名+trans命名保存数据
+                save_file_name = file_name.replace('.tsv', '_trans.pth')
+                save_file_path = os.path.join(save_path, save_file_name)
+                torch.save(outputs[0], save_file_path)
+                print(outputs[0].shape)
+                print(file_name)
+                print(f'处理第{file_count}个文件，第{batch_count}个批次')
+
 
