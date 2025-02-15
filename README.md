@@ -18,7 +18,7 @@ To run BertTCR, you need to configure the corresponding python package. If they 
 ```
 
 # Usage
-# Data Preparation
+## Data Preparation
 Before training or prediction, you must convert raw TSV files to .pth format using BERT_embedding.py:
 
 ## 1.Using the pre-trained model
@@ -48,5 +48,7 @@ python BertTCR_tranining.py --sample_dir ./TrainingData --val_sample_dir ./valid
 
 ```
 
-# Contact
-Feel free to submit an issue or contact us at 695193839@qq.com for problems about the tool.
+
+# Citation 
+Please cite our paper if BertTCR is helpful.
+Zhang M, Cheng Q, Wei Z, Xu J, Wu S, Xu N, Zhao C, Yu L, Feng W. BertTCR: a Bert-based deep learning framework for predicting cancer-related immune status based on T cell receptor repertoire. Brief Bioinform. 2024 Jul 25;25(5):bbae420. doi: 10.1093/bib/bbae420.
